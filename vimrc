@@ -142,7 +142,8 @@ au FileType cs compiler gmcs
 
 " we don't need matlab so associate *.m files with Objective-C syntax
 " highlighting
-au BufNewFile,BufRead *.m setf objc
+let filetype_m='objc'
+"au BufNewFile,BufRead *.m setf objc
 
 " correcting the filetype for html filier
 autocmd FileType html set ft=htmldjango.html " For SnipMate
@@ -227,6 +228,30 @@ endif
 " Source the vimrc file after saving it
 autocmd bufwritepost .vimrc source ~/.vimrc
 
+" Markdown settingd
+"
+augroup Formatting
+    autocmd!
+    autocmd BufNewFile,BufRead,WinEnter,BufEnter,FileType markdown,*.md,*.mkd setlocal formatoptions=ant textwidth=68 wrapmargin=0
+augroup END
+
+"switch spellcheck languages
+let g:myLang = 0
+let g:myLangList = [ "nospell", "es", "es_PE", "en_us" ]
+function! MySpellLang()
+  "loop through languages
+  let g:myLang = g:myLang + 1
+  if g:myLang >= len(g:myLangList) | let g:myLang = 0 | endif
+  if g:myLang == 0 | set nospell | endif
+  if g:myLang == 1 | setlocal spell spelllang=es | endif
+  if g:myLang == 2 | setlocal spell spelllang=es_PE | endif
+  if g:myLang == 3 | setlocal spell spelllang=en_us | endif
+  echo "language:" g:myLangList[g:myLang]
+endf
+
+map <F7> :call MySpellLang()<CR>
+imap <F7> <C-o>:call MySpellLang()<CR>
+
 " ========== END Gvim Settings ==========
 
 
@@ -259,17 +284,37 @@ let g:rainbow_active = 0
 nmap <leader>r <ESC>::RainbowToggle<cr>
 imap <leader>r <ESC>::RainbowToggle<cr>i
 
-" Vim powerline
-let g:Powerline_symbols = 'fancy'
-set rtp+=~/.vim/bundle/powerline/powerline/bindings/vim
+"Vim airline
+let g:airline_powerline_fonts = 1
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+let g:airline_symbols.space = "\ua0"
 
-" Ctags goTodefinition."
-imap <leader>k <ESC><C-]>
-nmap <leader>k <ESC><C-]>
+" Ctags goTodefinition. (see youcompleteme)"
+"imap <leader>k <ESC><C-]>
+"nmap <leader>k <ESC><C-]>
 
 " CtrlP settings"
 let g:ctrlp_map = '<c-t>'
 let g:ctrlp_cmd = 'CtrlP'
+
+" Dash settings
+:nmap <silent> <leader>d <Plug>DashSearch
+
+let g:dash_map = {
+    \ 'javascript'   : 'web_js',
+    \ 'python'   : 'python_fw'
+    \ }
+
+" Snipmate settings
+
+:imap <C-J> <Plug>snipMateNextOrTrigger
+:smap <C-J> <Plug>snipMateNextOrTrigger
+
+" Editorconfig settings
+let g:EditorConfig_max_line_indicator = 'none'
+let g:EditorConfig_preserve_formatoptions = 1
 
 "" Add the virtualenv's site-packages to vim path
 py << EOF
@@ -282,6 +327,47 @@ if 'VIRTUAL_ENV' in os.environ:
     activate_this = os.path.join(project_base_dir, 'bin/activate_this.py')
     execfile(activate_this, dict(__file__=activate_this))
 EOF
+
+" vdebug settings
+let g:vdebug_options = {}
+let g:vdebug_options["port"] = 9000
+let g:vdebug_options["break_on_open"] = 0
+let g:vdebug_keymap = {
+\    "run" : "<Leader>/",
+\    "run_to_cursor" : "<Down>",
+\    "step_over" : "<Up>",
+\    "step_into" : "<Left>",
+\    "step_out" : "<Right>",
+\    "close" : "q",
+\    "detach" : "x",
+\    "set_breakpoint" : "<Leader>p",
+\    "eval_visual" : "<Leader>e"
+\}
+
+" youcompleteme and omnicomplete
+
+set omnifunc=syntaxcomplete#Complete
+" Call YCM GoTo or vim-go GoTo depending on file type. 
+function! GoToDef()
+    if &ft == 'go'
+        "call go#def#Jump()
+        execute 'GoDef'
+    else
+        execute 'YcmCompleter GoTo'
+    endif
+endfunction
+
+imap <leader>k <ESC>:call GoToDef()<CR>
+nmap <leader>k <ESC>:call GoToDef()<CR>
+
+"syntastic
+"
+let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
+"let g:syntastic_mode_map = { 'mode': 'active', 'passive_filetypes': ['go'] }
+"
+"Pandoc
+nnoremap <leader>cow :Pandoc! docx<CR>
+
 
 " =========== END Plugin Settings =========="
 
@@ -303,3 +389,7 @@ let s:otherrc = expand($HOME . '/.vim/other.vimrc')
 if filereadable(s:otherrc)
     exec ':so ' . s:otherrc
 endif
+
+au FileType xml setlocal equalprg=xmllint\ --format\ --recover\ -\ 2>/dev/null
+
+" ============neovim========================"
