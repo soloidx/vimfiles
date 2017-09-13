@@ -100,6 +100,12 @@ set backupskip=/tmp/*,/private/tmp/*"
 " Mouse support even on terminals (in all modes)
 set mouse=a
 
+if has("mouse_sgr")
+    set ttymouse=sgr
+else
+    set ttymouse=xterm2
+end
+
 " Only do this part when compiled with support for autocommands.
 if has("autocmd")
 
@@ -155,6 +161,9 @@ map Q gq
 
 " jquery.vim syntax
 " au BufRead,BufNewFile *.js set ft=javascript syntax=jquery
+
+" Golang slide filetype
+au BufRead,BufNewFile *.slide set ft=slide
 
 
 " GUI options
@@ -230,22 +239,21 @@ autocmd bufwritepost .vimrc source ~/.vimrc
 
 " Markdown settingd
 "
-augroup Formatting
-    autocmd!
-    autocmd BufNewFile,BufRead,WinEnter,BufEnter,FileType markdown,*.md,*.mkd setlocal formatoptions=ant textwidth=68 wrapmargin=0
-augroup END
+" augroup Formatting
+"     autocmd!
+"     autocmd BufNewFile,BufRead,WinEnter,BufEnter,FileType markdown,*.md,*.mkd setlocal formatoptions=ant textwidth=68 wrapmargin=0
+" augroup END
 
 "switch spellcheck languages
 let g:myLang = 0
-let g:myLangList = [ "nospell", "es", "es_PE", "en_us" ]
+let g:myLangList = [ "nospell", "es", "en_us" ]
 function! MySpellLang()
   "loop through languages
   let g:myLang = g:myLang + 1
   if g:myLang >= len(g:myLangList) | let g:myLang = 0 | endif
   if g:myLang == 0 | set nospell | endif
   if g:myLang == 1 | setlocal spell spelllang=es | endif
-  if g:myLang == 2 | setlocal spell spelllang=es_PE | endif
-  if g:myLang == 3 | setlocal spell spelllang=en_us | endif
+  if g:myLang == 2 | setlocal spell spelllang=en_us | endif
   echo "language:" g:myLangList[g:myLang]
 endf
 
@@ -257,23 +265,19 @@ imap <F7> <C-o>:call MySpellLang()<CR>
 
 " ========== Plugin Settings =========="
 
-" Mapping to NERDTree
+" NERDTree
 nnoremap <leader>n :NERDTreeToggle<cr>
+
+let g:NERDTreeRespectWildIgnore = 1
+
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 0 && !exists("s:std_in") | NERDTree | endif "automatic open
 
 " Mini Buffer some settigns."
 let g:miniBufExplMapWindowNavVim = 1
 let g:miniBufExplMapWindowNavArrows = 1
 let g:miniBufExplMapCTabSwitchBufs = 1
 let g:miniBufExplModSelTarget = 1
-
-" Rope settings."
-let g:ropevim_open_files_in_tabs = 0
-imap <leader>j <ESC>:RopeGotoDefinition<cr>
-nmap <leader>j <ESC>:RopeGotoDefinition<cr>
-
-" ropevim (Python-only) options
-let ropevim_vim_completion=1
-let ropevim_extended_complete=1
 
 " Tagbar key bindings."
 nmap <leader>l <ESC>:TagbarToggle<cr>
@@ -294,6 +298,9 @@ let g:airline_symbols.space = "\ua0"
 " Ctags goTodefinition. (see youcompleteme)"
 "imap <leader>k <ESC><C-]>
 "nmap <leader>k <ESC><C-]>
+
+nmap <leader>k :YcmCompleter GoToDefinition<CR>
+
 
 " CtrlP settings"
 let g:ctrlp_map = '<c-t>'
@@ -368,6 +375,23 @@ let g:syntastic_go_checkers = ['golint', 'govet', 'errcheck']
 "Pandoc
 nnoremap <leader>cow :Pandoc! docx<CR>
 
+"Largefile
+let g:LargeFile=15
+
+" vim-jsx
+let g:jsx_ext_required = 0 " Allow JSX in normal JS files
+
+" Simpyfold
+set foldlevelstart=1
+
+" vim grammarous
+let g:grammarous#disabled_rules = {
+    \ '*' : ['WHITESPACE_RULE', 'EN_QUOTES'],
+    \ 'slide' : ['COMMA_PARENTHESIS_WHITESPACE', 'EN_QUOTES', 'DASH_RULE', 'SENTENCE_WHITESPACE', 'EN_QUOTES'],
+    \ }
+
+let g:grammarous#default_lang = 'en-US'
+
 
 " =========== END Plugin Settings =========="
 
@@ -393,3 +417,5 @@ endif
 au FileType xml setlocal equalprg=xmllint\ --format\ --recover\ -\ 2>/dev/null
 
 " ============neovim========================"
+au FileType yaml setlocal tabstop=2 expandtab shiftwidth=2 softtabstop=2
+au Filetype javascript setlocal ts=2 sts=2 sw=2
