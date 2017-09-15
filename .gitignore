@@ -1,3 +1,5 @@
 bundle/*
+plugged/*
+autoload/*
 other/*
 other.vimrc

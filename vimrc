@@ -19,9 +19,15 @@ set nocompatible
 set modelines=0
 
 " ========== Vundle settings ================"
-let s:vundlerc = expand($HOME . '/.vim/vundle.vimrc')
-if filereadable(s:vundlerc)
-    exec ':so ' . s:vundlerc
+"let s:vundlerc = expand($HOME . '/.vim/vundle.vimrc')
+"if filereadable(s:vundlerc)
+"    exec ':so ' . s:vundlerc
+"endif
+
+" ========== Plug settings ================"
+let s:plugrc = expand($HOME . '/.vim/plug.vimrc')
+if filereadable(s:plugrc)
+    exec ':so ' . s:plugrc
 endif
 
 " set backup and swap options
@@ -265,6 +271,10 @@ imap <F7> <C-o>:call MySpellLang()<CR>
 
 " ========== Plugin Settings =========="
 
+" CtrlP settings"
+let g:ctrlp_map = '<c-p>'
+let g:ctrlp_cmd = 'CtrlP'
+
 " NERDTree
 nnoremap <leader>n :NERDTreeToggle<cr>
 
@@ -294,17 +304,6 @@ if !exists('g:airline_symbols')
   let g:airline_symbols = {}
 endif
 let g:airline_symbols.space = "\ua0"
-
-" Ctags goTodefinition. (see youcompleteme)"
-"imap <leader>k <ESC><C-]>
-"nmap <leader>k <ESC><C-]>
-
-nmap <leader>k :YcmCompleter GoToDefinition<CR>
-
-
-" CtrlP settings"
-let g:ctrlp_map = '<c-t>'
-let g:ctrlp_cmd = 'CtrlP'
 
 " Dash settings
 :nmap <silent> <leader>d <Plug>DashSearch
@@ -352,6 +351,8 @@ let g:vdebug_keymap = {
 \}
 
 " youcompleteme and omnicomplete
+"
+nmap <leader>k :YcmCompleter GoToDefinition<CR>
 
 set omnifunc=syntaxcomplete#Complete
 " Call YCM GoTo or vim-go GoTo depending on file type. 
@@ -381,6 +382,16 @@ let g:LargeFile=15
 " vim-jsx
 let g:jsx_ext_required = 0 " Allow JSX in normal JS files
 
+" vim javascript
+set conceallevel=1
+let g:javascript_conceal_function             = "ƒ"
+let g:javascript_conceal_null                 = "ø"
+let g:javascript_conceal_return               = "⇚"
+let g:javascript_conceal_NaN                  = "ℕ"
+let g:javascript_conceal_static               = "•"
+let g:javascript_conceal_super                = "Ω"
+let g:javascript_conceal_arrow_function       = "⇒"
+
 " Simpyfold
 set foldlevelstart=1
 
@@ -398,6 +409,8 @@ let g:grammarous#default_lang = 'en-US'
 set t_Co=256
 syntax enable
 colorscheme xoria256
+hi Conceal ctermfg=255
+hi Conceal ctermbg=52
 "set background=dark
 "colorscheme solarized
 "colorscheme sift
