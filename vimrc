@@ -30,6 +30,10 @@ if filereadable(s:plugrc)
     exec ':so ' . s:plugrc
 endif
 
+" add numbers at left of the buffer
+set number
+set relativenumber
+
 " set backup and swap options
 set nobackup                    " back up current file, delete afterwards
 set writebackup                 " back up current file, delete afterwards
@@ -222,7 +226,7 @@ set wildignore+=*.spl "Compiled speolling world list"
 set wildignore+=*.sw? "Vim swap files"
 set wildignore+=*.DS_Store "OSX SHIT"
 set wildignore+=*.luac "Lua byte code"
-set wildignore+=migrations "Django migrations"
+"set wildignore+=migrations "Django migrations"
 set wildignore+=*.pyc "Python Object codes"
 set wildignore+=*.orig "Merge resolution files"
 
